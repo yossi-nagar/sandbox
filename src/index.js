@@ -2,11 +2,11 @@ import './style.css';
 
 document.querySelectorAll('.accordion').forEach(accordion => {
     let title = accordion.querySelector('.title'),
-    content = accordion.querySelector('.content'),
-    initialHeight = accordion.style.maxHeight;
+        content = accordion.querySelector('.content'),
+        initialHeight = accordion.style.maxHeight;
     title.addEventListener('click', e => {
-        if(!title.classList.contains('active')) {
-           
+        if (!title.classList.contains('active')) {
+
             window.requestAnimationFrame(ts => {
                 title.classList.add('active');
                 title.classList.remove('not-active');
@@ -14,7 +14,7 @@ document.querySelectorAll('.accordion').forEach(accordion => {
                 accordion.style.maxHeight = `${maxHeight}px`;
             });
         } else {
-            
+
             window.requestAnimationFrame(ts => {
                 title.classList.add('not-active');
                 title.classList.remove('active');
