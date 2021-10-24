@@ -1,0 +1,38 @@
+.container { 
+    display: flex;
+    margin: 0 auto;
+    width: 966px;
+    flex-direction: column;
+}
+
+.accordion {
+    overflow:hidden;
+    max-height: 39px;
+    box-sizing: border-box;
+    transition: max-height 1s ease-in-out;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    background-color: #cecece;
+    padding: 10px 5px 10px 5px;;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.content {
+    overflow-wrap: break-word;
+    margin: 0;
+    padding: 0;
+    width: 99%;
+}
+.content p {
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+
