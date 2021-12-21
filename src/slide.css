@@ -1,0 +1,60 @@
+body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+body * {
+    box-sizing: border-box;
+}
+
+.container {
+    display: flex;
+    margin: 0 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.slider {
+    position: relative;
+    width: 190px;
+    /* height: 240px; */
+    overflow: hidden;
+
+    background: lightgrey;
+}
+
+.slides {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    /* position: absolute; */
+    transform: translateX(0);
+    transition: transform 0.25s ease-out;
+}
+
+.slide {
+    height: 200px;
+    width: 150px;
+    margin: 20px 20px;
+    border: 1px solid #000000;
+    flex: 0 0 150px;
+}
+
+.slide1 {
+    background: chartreuse;
+}
+
+.slide2 {
+    background: chocolate;
+}
+
+.slide3 {
+    background: cornsilk;
+}
+
+.slide4 {
+    background: darkgoldenrod;
+}
+
+.slide5 {
+    background: darkmagenta;
+}

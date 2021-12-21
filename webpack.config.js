@@ -11,7 +11,12 @@ const stylesHandler = isProduction
   : "style-loader";
 
 const config = {
-  entry: "./src/index.js",
+  entry: {
+    main: "./src/index.js",
+    isinvp: "./src/isinvp.js",
+    move: './src/move.js',
+    slide: './src/slide.js'
+  },
   output: {
     path: path.resolve(__dirname, "dist"),
   },
@@ -23,7 +28,21 @@ const config = {
     new HtmlWebpackPlugin({
       template: "index.html",
     }),
-
+    new HtmlWebpackPlugin({
+      template: "isInViewPort.html",
+      filename: "isinvp.html",
+      chunks: ['isinvp']
+    }),
+    new HtmlWebpackPlugin({
+      template: "move.html",
+      filename: "move.html",
+      chunks: ['move']
+    }),
+    new HtmlWebpackPlugin({
+      template: "slide.html",
+      filename: "slide.html",
+      chunks: ['slide']
+    }),
     // Add your plugins here
     // Learn more about plugins from https://webpack.js.org/configuration/plugins/
   ],
