@@ -15,7 +15,8 @@ const config = {
     main: "./src/index.js",
     isinvp: "./src/isinvp.js",
     move: './src/move.js',
-    slide: './src/slide.js'
+    slide: './src/slide.js',
+    menu: './src/menu.js'
   },
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -43,6 +44,12 @@ const config = {
       filename: "slide.html",
       chunks: ['slide']
     }),
+
+    new HtmlWebpackPlugin({
+      template: 'menu.html',
+      filename: 'menu.html',
+      chunks: ['menu']
+    })
     // Add your plugins here
     // Learn more about plugins from https://webpack.js.org/configuration/plugins/
   ],
