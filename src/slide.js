@@ -124,7 +124,7 @@ function culcRight() {
 }
 
 function culcLeft() {
-        //determines if we are in the last swipe available to the left and  changes the value slidesToMove accordingly
+        //determines if we are in the first swipe to the left and changes the value slidesToMove accordingly
     let slidesToMove = (revealedNumber !== slidesNumber) ? sliderSettings.slideMove : slidesNumber - (sliderSettings.item + (sliderSettings.slideMove * (activeBtnNumber - 2)));
     revealedNumber -= slidesToMove;
     let pxToMoveRight = slidesToMove * (sliderSettings.slideMargin + size);
