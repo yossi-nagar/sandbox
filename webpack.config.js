@@ -16,14 +16,17 @@ const config = {
     isinvp: "./src/isinvp.js",
     move: './src/move.js',
     slide: './src/slide.js',
-    menu: './src/menu.js'
+    menu: './src/menu.js',
+  // video : './src/video.js'
   },
   output: {
     path: path.resolve(__dirname, "dist"),
   },
   devServer: {
     open: true,
-    host: "localhost",
+    host: "local.iforex.com",
+    https: true,
+    port: 443
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -49,9 +52,12 @@ const config = {
       template: 'menu.html',
       filename: 'menu.html',
       chunks: ['menu']
+    }),
+    new HtmlWebpackPlugin({
+      template: 'video.html',
+      filename: 'video.html',
+      chunks: []
     })
-    // Add your plugins here
-    // Learn more about plugins from https://webpack.js.org/configuration/plugins/
   ],
   module: {
     rules: [

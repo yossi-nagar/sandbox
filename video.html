@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video</title>
+</head>
+<body>
+    
+<script src="https://mte-media.com/slmloaders/apilib\/xmteapi.js"></script>
+
+<div id="container"></div>
+
+<script>
+
+    Xclient.render({
+		/* STATIC DATA*/
+        clientId: '71869f0', // Client ID
+        product:'tecvid', // Product code (cal,news,sumr-d,sumr-w,sumr-m,tecan,tecvid,sgnl)
+		lang:'en',
+		asset:'$csib', //retreive data for specific assets ($csib)
+		limit:100, // data limit (news, sumr-d,sumr-w,sumr-m, tecan, tecvid only)
+		private:'true',
+        getData: function(data) {
+            console.log('data returned:', data);
+
+        },
+		
+		/* DYNAMIC DATA*/
+        added:function(message){
+            console.log("added",message);
+        },
+        changed:function(message){
+            console.log("changed",message);
+        },
+        removed:function(message){
+            console.log("removed",message);
+        }
+
+    }, '#container');
+</script>
+
+</body>
+</html>
