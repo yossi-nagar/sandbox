@@ -17,6 +17,8 @@ const config = {
     move: './src/move.js',
     slide: './src/slide.js',
     menu: './src/menu.js',
+    plyr: './src/plyr.js',
+    facebook: './src/facebook.js'
   // video : './src/video.js'
   },
   output: {
@@ -57,6 +59,21 @@ const config = {
       template: 'video.html',
       filename: 'video.html',
       chunks: []
+    }),
+    new HtmlWebpackPlugin({
+      template: 'mte.html',
+      filename: 'mte.html',
+      chunks: []
+    }),
+    new HtmlWebpackPlugin({
+      template: 'plyr.html',
+      filename: 'plyr.html',
+      chunks: ['plyr']
+    }),
+    new HtmlWebpackPlugin({
+      template: 'facebook-login.html',
+      filename: 'facebook-login.html',
+      chunks: ['facebook']
     })
   ],
   module: {
@@ -74,7 +91,7 @@ const config = {
         use: [stylesHandler, "css-loader", "sass-loader"],
       },
       {
-        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
+        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif|mp4)$/i,
         type: "asset",
       },
 

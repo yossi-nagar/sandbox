@@ -32,6 +32,7 @@
     "wepack-cli": "0.0.1-security"
   },
   "dependencies": {
-    "hammerjs": "^2.0.8"
+    "hammerjs": "^2.0.8",
+    "plyr": "^3.6.12"
   }
 }
