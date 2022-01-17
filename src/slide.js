@@ -1,32 +1,155 @@
 import './slide.css';
 import Hammer from 'hammerjs';
 
-const elSlider = document.querySelector('.slider');
-const slidesContainer = document.querySelector('.slides');
-const elSliderBtnsContainer = document.querySelector('.slider-btns-container');
-const slidesNumber = document.querySelectorAll('.slide').length;
-let elSliderBtns;
 
-const size = 222;
-let pxToMove = 0;
-let sliderSettings;
-let screenWidth = window.innerWidth;
-let buttonsNumber;
-let revealedNumber;
-let activeBtnNumber = 1;
+function getSliderSettings() {
+    let sliderSettings;
+    let screenWidth = window.innerWidth;
+    if (screenWidth > breakpoints[0].breakpoint) return sliderSettings = breakpoints[0];
+    for (let i = 0; i < breakpoints.length; i++) {
+        if (screenWidth <= breakpoints[i].breakpoint) sliderSettings = breakpoints[i];
+    }
+    return sliderSettings;
+}
 
 
-//elements that shows settings
-const elSizeSpan = document.querySelector('.size span');
-const pxToMoveSpan = document.querySelector('.px-to-move span');
-const revealedNumberSpan = document.querySelector('.revealed-number span');
-const activeBtnNumberSpan = document.querySelector('.active-btn-number span');
-const buttonsNumberSpan = document.querySelector('.buttons-number span');
-const sliderSettingsBreakpointSpan = document.querySelector('.slider-settings-breakpoint span');
-const sliderSettingsItemSpan = document.querySelector('.slider-settings-item span');
-const sliderSettingsSlideMoveSpan = document.querySelector('.slider-settings-slide-move span');
-const sliderSettingsSlideMarginSpan = document.querySelector('.slider-settings-slide-margin span');
+class Slider {
 
+
+    constructor(sliderSettings, isRTL) {
+        this.slideWidth = sliderSettings.slideWidth;
+        this.item = sliderSettings.item;
+        this.slideMove = sliderSettings.slideMove;
+        this.slideMargin = sliderSettings.slideMargin;
+        this.slidesNumber;
+
+        this.pxToMove = 0;
+        this.activeBtnNumber = 1;
+        this.revealedNumber = sliderSettings.item;
+        this.buttonsNumber = this.getButtonsNumber();
+        this.screenWidth;
+
+        this.elSlider; //maybe can be deleted because we declare it once again the RAF
+        this.elSlidesContainer;
+        this.elSliderBtnsContainer;
+        this.elSliderBtns;
+
+        requestAnimationFrame(() => {
+            this.screenWidth = window.innerWidth;
+            this.elSlider = document.querySelector('.slider');
+            this.elSlidesContainer = document.querySelector('.slides');
+            this.elSliderBtnsContainer = document.querySelector('.slider-btns-container');
+            this.slidesNumber = document.querySelectorAll('.slide').length;
+            this.buttonsNumber = this.getButtonsNumber();
+            this.createSliderButtons();
+            this.setSliderWidth();
+            this.pxToMove = 0;
+
+            if(isRTL) this.setRTL();
+
+            const hammer = new Hammer(this.elSlider);
+            hammer.on('swipeleft', () => this.move(isRTL ? 'left' : 'right'));
+            hammer.on('swiperight', () => this.move(isRTL ? 'right' : 'left'));
+        });
+
+
+        
+    }
+
+    getButtonsNumber() {
+        return Math.ceil(((this.slidesNumber - this.item) / this.slideMove) + 1);
+    }
+
+    createSliderButtons() {
+        const sliderBtns = [];
+        for (let i = 0; i < this.buttonsNumber; i++) {
+
+            let slidesToMove;
+            let px;
+            const elSliderBtn = document.createElement('li');
+
+            if (i < this.buttonsNumber - 1) {
+                //Standard button
+                slidesToMove = this.slideMove * i;
+                px = -slidesToMove * (this.slideMargin + this.slideWidth);
+            } else {
+                //Handles the last button px number(In case slidesNumber is not divided by  sliderSettings.slideMove)
+                slidesToMove = this.slidesNumber - this.item;
+                px = -slidesToMove * (this.slideMargin + this.slideWidth)
+            }
+
+            elSliderBtn.addEventListener('click', () => this.onBtnClick(px, i, slidesToMove));
+            sliderBtns.push(elSliderBtn);
+        }
+        sliderBtns[0].classList.add('active');
+        this.elSliderBtnsContainer.replaceChildren(...sliderBtns);
+        this.elSliderBtns = this.elSliderBtnsContainer.children;
+        this.activeBtnNumber = 1;
+    }
+
+    setSliderWidth() {
+        this.elSlider.style.width = `${(this.slideWidth * this.item) + (this.slideMargin * (this.item - 1))}px`;
+        this.elSlidesContainer.style.setProperty("transform", "translateX(0px)");
+    }
+
+    setRTL(){
+        this.elSlider.classList.add('mirror-flip');
+        const elSlides = Array.from(this.elSlidesContainer.children);
+        elSlides.forEach(slide => slide.classList.add('mirror-flip'));
+        this.elSliderBtnsContainer.classList.add('mirror-flip');
+    }
+
+    calcRight() {
+        //determines if we are in the last swipe available to the right and  changes the value slidesToMove accordingly
+        let slidesToMove = (this.revealedNumber + this.slideMove <= this.slidesNumber) ? this.slideMove : this.slidesNumber - this.revealedNumber;
+        this.revealedNumber += slidesToMove;
+        let pxToMoveRight = -slidesToMove * (this.slideMargin + this.slideWidth);
+        return pxToMoveRight;
+    }
+    
+    calcLeft() {
+        //determines if we are in the first swipe to the left and changes the value slidesToMove accordingly
+        let slidesToMove = (this.revealedNumber !== this.slidesNumber) ? this.slideMove : this.slidesNumber - (this.item + (this.slideMove * (this.activeBtnNumber - 2)));
+        this.revealedNumber -= slidesToMove;
+        let pxToMoveRight = slidesToMove * (this.slideMargin + this.slideWidth);
+        return pxToMoveRight;
+    }
+    
+    slideRight() {
+        if (this.revealedNumber === this.slidesNumber) return
+        this.pxToMove += this.calcRight();
+        this.activeBtnNumber++;
+        this.elSliderBtns[this.activeBtnNumber - 1].classList.toggle('active');
+        this.elSliderBtns[this.activeBtnNumber - 2].classList.toggle('active');
+    }
+    
+    slideLeft() {
+        if (this.revealedNumber === this.item) return
+        this.pxToMove += this.calcLeft();
+        this.activeBtnNumber--;
+        this.elSliderBtns[this.activeBtnNumber].classList.toggle('active');
+        this.elSliderBtns[this.activeBtnNumber - 1].classList.toggle('active');
+    }
+
+    move(direction) {
+        requestAnimationFrame(() => {
+            (direction === 'right') ? this.slideRight() : this.slideLeft();
+            this.elSlidesContainer.style.setProperty("transform", `translateX(${this.pxToMove}px)`);
+        })
+    }
+
+    onBtnClick(px, idx, slidesMoved) {
+        this.revealedNumber = this.item + slidesMoved;
+        this.pxToMove = px;
+        requestAnimationFrame(() => {
+            this.elSliderBtns[this.activeBtnNumber - 1].classList.remove('active');
+            this.activeBtnNumber = idx + 1;
+            this.elSliderBtns[idx].classList.add('active')
+            this.elSlidesContainer.style.setProperty("transform", `translateX(${this.pxToMove}px)`);
+        })
+    }
+    
+}
 
 const breakpoints = [
     {
@@ -34,194 +157,53 @@ const breakpoints = [
         item: 6,
         slideMove: 3,
         slideMargin: 16,
+        slideWidth: 222
     },
     {
         breakpoint: 1600,
         item: 4,
         slideMove: 3,
         slideMargin: 16,
+        slideWidth: 222
     },
     {
         breakpoint: 950,
         item: 3,
         slideMove: 2,
         slideMargin: 16,
+        slideWidth: 222
     },
     {
         breakpoint: 750,
         item: 2,
         slideMove: 1,
         slideMargin: 16,
+        slideWidth: 222
     },
     {
         breakpoint: 520,
         item: 2,
         slideMove: 1,
         slideMargin: 16,
+        slideWidth: 222
     },
     {
         breakpoint: 420,
         item: 1,
         slideMove: 1,
         slideMargin: 16,
+        slideWidth: 222
     }
 ]
 
-function setSliderSettings() {
-    screenWidth = window.innerWidth;
-    if (screenWidth > breakpoints[0].breakpoint) return sliderSettings = breakpoints[0];
-    for (let i = 0; i < breakpoints.length; i++) {
-        if (screenWidth <= breakpoints[i].breakpoint) sliderSettings = breakpoints[i];
-    }
-    revealedNumber = sliderSettings.item;
-}
 
 
+requestAnimationFrame(()=>{
+    const settings = getSliderSettings();
 
-function setButtonsNumber() {
-    buttonsNumber = Math.ceil(((slidesNumber - sliderSettings.item) / sliderSettings.slideMove) + 1);
-}
+    new Slider(settings, false);
 
-function createSliderButtons() {
-    const sliderBtns = [];
-    for (let i = 0; i < buttonsNumber; i++) {
-
-        let slidesToMove;
-        let px;
-        const elSliderBtn = document.createElement('li');
-
-        if (i < buttonsNumber - 1) {
-            //Standard button
-            slidesToMove = sliderSettings.slideMove * i;
-            px = -slidesToMove * (sliderSettings.slideMargin + size);
-        } else {
-            //Handles the last button px number(In case slidesNumber is not divided by  sliderSettings.slideMove)
-            slidesToMove = slidesNumber - sliderSettings.item;
-            px = -slidesToMove * (sliderSettings.slideMargin + size)
-        }
-
-        elSliderBtn.addEventListener('click', () =>  onBtnClick(px, i, slidesToMove));
-        sliderBtns.push(elSliderBtn)
-    }
-    sliderBtns[0].classList.add('active')
-    elSliderBtnsContainer.replaceChildren(...sliderBtns);
-    elSliderBtns = elSliderBtnsContainer.children;
-    activeBtnNumber = 1;
-}
-
-
-function setSliderWidth() {
-    elSlider.style.width = `${(size * sliderSettings.item) + (sliderSettings.slideMargin * (sliderSettings.item - 1))}px`;
-    slidesContainer.style.setProperty("transform", "translateX(0px)");
-}
-
-function culcRight() {
-    //determines if we are in the last swipe available to the right and  changes the value slidesToMove accordingly
-    let slidesToMove = (revealedNumber + sliderSettings.slideMove <= slidesNumber) ? sliderSettings.slideMove : slidesNumber - revealedNumber;
-    revealedNumber += slidesToMove;
-    let pxToMoveRight = -slidesToMove * (sliderSettings.slideMargin + size);
-    return pxToMoveRight;
-}
-
-function culcLeft() {
-        //determines if we are in the first swipe to the left and changes the value slidesToMove accordingly
-    let slidesToMove = (revealedNumber !== slidesNumber) ? sliderSettings.slideMove : slidesNumber - (sliderSettings.item + (sliderSettings.slideMove * (activeBtnNumber - 2)));
-    revealedNumber -= slidesToMove;
-    let pxToMoveRight = slidesToMove * (sliderSettings.slideMargin + size);
-    return pxToMoveRight;
-}
-
-function slideRight() {
-    if (revealedNumber === slidesNumber) return
-    pxToMove += culcRight();
-    activeBtnNumber++;
-    elSliderBtns[activeBtnNumber - 1].classList.toggle('active');
-    elSliderBtns[activeBtnNumber - 2].classList.toggle('active');
-}
-
-function slideLeft() {
-    if (revealedNumber === sliderSettings.item) return
-    pxToMove += culcLeft();
-    activeBtnNumber--;
-    elSliderBtns[activeBtnNumber].classList.toggle('active');
-    elSliderBtns[activeBtnNumber - 1].classList.toggle('active');
-}
-
-
-
-function move(direction) {
-    requestAnimationFrame(() => {
-        (direction === 'right') ? slideRight() : slideLeft();
-        slidesContainer.style.setProperty("transform", `translateX(${pxToMove}px)`);
-        updateSettingsToShow()
-    })
-}
-
-function setSlider() {
-    setSliderSettings();
-    setButtonsNumber();
-    createSliderButtons();
-    setSliderWidth();
-    pxToMove = 0;
-    updateSettingsToShow()
-}
-
-function onBtnClick(px, idx, slidesMoved) {
-    revealedNumber = sliderSettings.item + slidesMoved;
-    pxToMove = px;
-    elSliderBtns[activeBtnNumber -1].classList.remove('active');
-    activeBtnNumber = idx + 1;
-    elSliderBtns[idx].classList.add('active')
-    slidesContainer.style.setProperty("transform", `translateX(${pxToMove}px)`);
-    updateSettingsToShow()
-}
-
-function updateSettingsToShow(){
-    elSizeSpan.innerText = size;
-    pxToMoveSpan.innerText = pxToMove;
-    revealedNumberSpan.innerText = revealedNumber;
-    activeBtnNumberSpan.innerText = activeBtnNumber;
-    buttonsNumberSpan.innerText = buttonsNumber;
-    sliderSettingsBreakpointSpan.innerText = sliderSettings.breakpoint;
-    sliderSettingsItemSpan.innerText = sliderSettings.item;
-    sliderSettingsSlideMoveSpan.innerText = sliderSettings.slideMove;
-    sliderSettingsSlideMarginSpan.innerText = sliderSettings.slideMargin;
-}
-
-
-function onInit() {
-
-    requestAnimationFrame(setSlider);
-
-    const hammer = new Hammer(elSlider);
-    hammer.on('swipeleft', () => move('right'));
-    hammer.on('swiperight', () => move('left'));
-
-
-    let timeout;
-
-    window.addEventListener('resize', function ( event ) {
-    
-        // If there's a timer, cancel it
-        if (timeout) {
-            window.cancelAnimationFrame(timeout);
-        }
-    
-        // Setup the new requestAnimationFrame()
-        timeout = window.requestAnimationFrame(function () {
-    
-            // Run our scroll functions
-            setSlider()
-        });
-    
-    }, false)
-
-}
-
-
-
-
-
-onInit();
-//TODO
-//add RTL
+    //RTL DEMO
+    // document.body.classList.add('ar');
+    // new Slider(settings, true);
+})
