@@ -25,7 +25,9 @@ const config = {
   devServer: {
     open: true,
     host: "local.iforex.com",
-    https: true,
+    server: {
+      type: 'https'
+    },
     port: 443
   },
   plugins: [
