@@ -18,9 +18,6 @@ const config = {
     slide: './src/slide.js',
     menu: './src/menu.js',
     plyr: './src/plyr.js',
-    facebook: './src/facebook.js',
-    google: './src/google.js'
-  // video : './src/video.js'
   },
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -71,16 +68,7 @@ const config = {
       filename: 'plyr.html',
       chunks: ['plyr']
     }),
-    new HtmlWebpackPlugin({
-      template: 'facebook-login.html',
-      filename: 'facebook-login.html',
-      chunks: ['facebook']
-    }),
-    new HtmlWebpackPlugin({
-      template: 'google-login.html',
-      filename: 'google-login.html',
-      chunks: ['google']
-    })
+    
   ],
   module: {
     rules: [
