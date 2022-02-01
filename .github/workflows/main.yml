@@ -27,7 +27,7 @@ jobs:
         run: |
           x=(a b c);
           echo "::echo::on";
-          echo "::set-output name=matrix::[$(printf '\\"%s\\",' "${x[@]}" | sed 's/,$//')]";
+          echo "::set-output name=matrix::[$(printf '"%s",' "${x[@]}" | sed 's/,$//')]";
           echo "::echo::off";
 
     outputs:
@@ -35,8 +35,8 @@ jobs:
   foo:
     needs: build
     runs-on: ubuntu-latest
-#     strategy:
-#       matrix:
-#         arg: ${{ fromJson(needs.build.outputs.matrix) }}
+    strategy:
+      matrix:
+        arg: ${{ fromJson(needs.build.outputs.matrix) }}
     steps:
-      - run: echo '${{ needs.build.outputs.matrix }}'
+      - run: echo '${{ matrix.arg }}'
