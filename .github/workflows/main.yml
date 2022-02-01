@@ -24,4 +24,4 @@ jobs:
     steps:
       - name: Run a multi-line script
         run: |
-          echo '${{ fromJson("[\"a\",\"b\"]") }}'
+          echo '${{ fromJson('["a","b"]') }}'
