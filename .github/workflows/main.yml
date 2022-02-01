@@ -29,7 +29,7 @@ jobs:
         run: |
           x=$(ls -1 pack*.json);
           echo "::echo::on";
-          echo "::set-output name=matrix::[$(echo $x | tr '\n' ' '| sed 's/ $//' | printf '"%s",' "${x[@]}" | sed 's/,$//')]";
+          echo "::set-output name=matrix::[$(echo "$x" | tr '\n' ' '| sed 's/ $//' | printf '"%s",' "${x[@]}" | sed 's/,$//')]";
           echo "::echo::off";
 
     outputs:
