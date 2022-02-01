@@ -23,5 +23,18 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Run a multi-line script
+        id: set-matrix
         run: |
-          echo '${{ fromJson('["a","b"]') }}'
+          x=(a b c);
+          echo "::set-output name=matrix::[$(printf '\\"%s\\",' "${x[@]}" | sed 's/,$//')]"
+
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+  foo:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arg: ${{ fromJson(needs.build.output.matrix) }}
+    steps:
+      - run: echo '${{ matrix.arg }}'
