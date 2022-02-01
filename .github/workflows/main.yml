@@ -22,10 +22,16 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - uses: actions/checkout@v2.4.0
+        
       - name: Run a multi-line script
         id: set-matrix
         run: |
-          x=(a b c);
+          x=();
+          for file in $(ls -1 pack*.json)
+          do
+            x+="$file";
+          done
           echo "::echo::on";
           echo "::set-output name=matrix::[$(printf '"%s",' "${x[@]}" | sed 's/,$//')]";
           echo "::echo::off";
