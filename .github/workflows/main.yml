@@ -27,9 +27,9 @@ jobs:
       - name: Run a multi-line script
         id: set-matrix
         run: |
-          x=$(ls -1 pack*.json);
+          x=$(echo $(ls -1 pack*.json) );
           echo "::echo::on";
-          echo "::set-output name=matrix::[$(echo "$x" | tr '\n' ' '| sed 's/ $//' | printf '"%s",' "${x[@]}" | sed 's/,$//')]";
+          echo "::set-output name=matrix::[$(printf '"%s",' "${x[@]}" | sed 's/,$//')]";
           echo "::echo::off";
 
     outputs:
